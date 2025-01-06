@@ -34,7 +34,7 @@ def main(model_folder,
          num_expression_coeffs=10,
          plotting_module='pyrender',
          use_face_contour=False):
-
+    print(f"model_type in create function: {model_type}")
     model = smplx.create(model_folder, model_type=model_type,
                          gender=gender, use_face_contour=use_face_contour,
                          num_betas=num_betas,
@@ -72,8 +72,22 @@ def main(model_folder,
         if plot_joints:
             sm = trimesh.creation.uv_sphere(radius=0.005)
             sm.visual.vertex_colors = [0.9, 0.1, 0.1, 1.0]
-            tfs = np.tile(np.eye(4), (len(joints), 1, 1))
+            tfs = np.tile(np.eye(4), (len(joints), 1, 1)) # tile along first dimension
             tfs[:, :3, 3] = joints
+            # print(tfs)
+            # from scipy.spatial.transform import Rotation as R
+
+            # num_joints = len(joints)
+            # num_rotations = np.random.randint(1, num_joints)
+            # rotation_indices = np.random.choice(num_joints, num_rotations, replace=False)
+            # for idx in rotation_indices:
+            #     rotation_matrix = R.random().as_matrix()
+            #     tfs[idx, :3, :3] = rotation_matrix
+
+            # scale_factor = 1.5  # Example scale factor
+            # tfs[:, :3, :3] *= scale_factor
+            # print("after:\n", tfs)
+
             joints_pcl = pyrender.Mesh.from_trimesh(sm, poses=tfs)
             scene.add(joints_pcl)
 

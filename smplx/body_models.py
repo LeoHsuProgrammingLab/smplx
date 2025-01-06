@@ -220,9 +220,11 @@ class SMPL(nn.Module):
 
         if create_body_pose:
             if body_pose is None:
+                print('body pose is None')
                 default_body_pose = torch.zeros(
                     [batch_size, self.NUM_BODY_JOINTS * 3], dtype=dtype)
             else:
+                print('body pose is not None')
                 if torch.is_tensor(body_pose):
                     default_body_pose = body_pose.clone().detach()
                 else:
@@ -906,7 +908,7 @@ class SMPLX(SMPLH):
     NUM_JOINTS = NUM_BODY_JOINTS + 2 * NUM_HAND_JOINTS + NUM_FACE_JOINTS
     EXPRESSION_SPACE_DIM = 100
     NECK_IDX = 12
-
+    
     def __init__(
         self, model_path: str,
         kid_template_path: str = '',
@@ -970,7 +972,7 @@ class SMPLX(SMPLH):
             dtype: torch.dtype
                 The data type for the created variables
         '''
-
+        print('J')
         # Load the model
         if osp.isdir(model_path):
             model_fn = 'SMPLX_{}.{ext}'.format(gender.upper(), ext=ext)
@@ -989,7 +991,7 @@ class SMPLX(SMPLH):
             raise ValueError('Unknown extension: {}'.format(ext))
 
         data_struct = Struct(**model_data)
-
+        print("Initializing SMPLX...")
         super(SMPLX, self).__init__(
             model_path=model_path,
             kid_template_path=kid_template_path,
@@ -2406,18 +2408,20 @@ def create(
             ValueError: In case the model type is not one of SMPL, SMPLH,
             SMPLX, MANO or FLAME
     '''
-
+    assert(model_type=='smplx')
+    print("create function called")
     # If it's a folder, assume
     if osp.isdir(model_path):
         model_path = os.path.join(model_path, model_type)
     else:
         model_type = osp.basename(model_path).split('_')[0].lower()
-
+    
     if model_type.lower() == 'smpl':
         return SMPL(model_path, **kwargs)
     elif model_type.lower() == 'smplh':
         return SMPLH(model_path, **kwargs)
     elif model_type.lower() == 'smplx':
+        print('smplx')
         return SMPLX(model_path, **kwargs)
     elif 'mano' in model_type.lower():
         return MANO(model_path, **kwargs)
